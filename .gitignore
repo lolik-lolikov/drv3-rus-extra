@@ -1,0 +1,15 @@
+# Оригинальные файлы игры — в репозиторий не кладутся (извлекаются из своей копии игры)
+orig/
+orig_src/
+work/src/
+work/rsrc/
+# Результаты сборки — выкладываются в Releases
+build/
+pkg/
+*.exe
+*.zip
+# Служебное
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
