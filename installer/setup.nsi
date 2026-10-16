@@ -5,7 +5,7 @@ SetCompressor /SOLID lzma
 RequestExecutionLevel admin
 
 !ifndef VERSION
-  !define VERSION "2.2"
+  !define VERSION "2.3"
 !endif
 !define APPNAME "Русификатор доп. режимов Danganronpa V3"
 !define UNKEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\DRV3_RusExtra"

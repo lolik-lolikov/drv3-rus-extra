@@ -38,6 +38,18 @@ FONTS = {
     'roboto': F('fonts3/roboto_700.ttf'), 'roboto5': F('fonts3/roboto_500.ttf'), 'roboto4': F('fonts3/roboto_400.ttf'),
     'mpr4': F('fonts3/mpr_400.ttf'), 'mpr8': F('fonts3/mpr_800.ttf'), 'mpr9': F('fonts3/mpr_900.ttf'),
     'rubik4': F('fonts/rubik_400.ttf'),
+    'exo3': F('fonts/exo-2_300.ttf'), 'exo4': F('fonts/exo-2_400.ttf'), 'exo5': F('fonts/exo-2_500.ttf'), 'exo7': F('fonts/exo-2_700.ttf'),
+    'comfortaa3': F('fonts/comfortaa_300.ttf'), 'comfortaa5': F('fonts/comfortaa_500.ttf'), 'ubuntu3': F('fonts/ubuntu_300.ttf'),
+    'ubuntu4': F('fonts/ubuntu_400.ttf'), 'ubuntu5': F('fonts/ubuntu_500.ttf'), 'rubik3': F('fonts/rubik_300.ttf'),
+    'oswald4': F('fonts/oswald_400.ttf'), 'oswald3': F('fonts/oswald_300.ttf'), 'ptn4': F('fonts/pt-sans-narrow_400.ttf'),
+    # v2.4: декоративные (fontsource, OFL)
+    'glitch': F('fonts4/rubik-glitch.ttf'), 'spray': F('fonts4/rubik-spray-paint.ttf'), 'dirt': F('fonts4/rubik-dirt.ttf'),
+    'distressed': F('fonts4/rubik-distressed.ttf'), 'wetpaint': F('fonts4/rubik-wet-paint.ttf'), 'burned': F('fonts4/rubik-burned.ttf'),
+    'underdog': F('fonts4/underdog.ttf'), 'marmelad': F('fonts4/marmelad.ttf'), 'kurale': F('fonts4/kurale.ttf'), 'oi': F('fonts4/oi.ttf'),
+    'pangolin': F('fonts4/pangolin.ttf'), 'balsamiq': F('fonts4/balsamiq_700.ttf'), 'balsamiqi': F('fonts4/balsamiq_700i.ttf'),
+    'pattaya': F('fonts4/pattaya.ttf'), 'ruslan': F('fonts4/ruslan-display.ttf'), 'lobster': F('fonts4/lobster.ttf'),
+    'dotgothic': F('fonts4/dotgothic16.ttf'), 'tiny5': F('fonts4/tiny5.ttf'),
+    'montalt4': F('fonts/montserrat-alternates_400.ttf'), 'montalt5': F('fonts/montserrat-alternates_500.ttf'), 'montalt6': F('fonts/montserrat-alternates_600.ttf'),
 }
 SS = 4
 
@@ -62,9 +74,11 @@ def dominant_color(im):
     return (int(k // 1024 * 8 + 4), int(k // 32 % 32 * 8 + 4), int(k % 32 * 8 + 4), 255)
 
 
-def render_lines(text, font, size, tracking=0, line_gap=1.0):
+def render_lines(text, font, size, tracking=0, line_gap=1.0, desc_squash=None, lalign='center'):
     """Render text mask (L) at supersampled size; returns mask image tight-cropped horizontally,
-    with vertical extent from cap-top of first line to baseline of last line."""
+    with vertical extent from cap-top of first line to baseline of last line.
+    desc_squash: сжать выносные элементы под базовой линией (у, р, д) в k раз — для тесных текстур,
+    где у шрифта оригинала короткие выносные."""
     f = ImageFont.truetype(font, size)
     lines = text.split('\n')
     asc = f.getbbox('НH', anchor='ls')[1]  # negative cap height
@@ -85,12 +99,26 @@ def render_lines(text, font, size, tracking=0, line_gap=1.0):
     top = int(size * 0.3)
     for k, ln in enumerate(lines):
         y = top + cap + k * lh
-        x = (W - widths[k]) / 2
+        x = {'left': size / 2, 'right': W - size / 2 - widths[k]}.get(lalign, (W - widths[k]) / 2)
         if tracking:
             for ch in ln:
                 d.text((x, y), ch, font=f, fill=255, anchor='ls'); x += f.getlength(ch) + tracking * SS
         else:
             d.text((x, y), ln, font=f, fill=255, anchor='ls')
+    if desc_squash:
+        a = np.array(m)
+        D = int(size * 0.3)
+        for k in range(len(lines)):
+            b = top + cap + k * lh + 1
+            e = min(H, b + D)
+            if e - b < 2:
+                continue
+            band = Image.fromarray(a[b:e])
+            nh = max(1, int(round((e - b) * desc_squash)))
+            band = np.array(band.resize((band.width, nh), Image.LANCZOS))
+            a[b:e] = 0
+            a[b:b + nh] = band
+        m = Image.fromarray(a)
     return m, top, cap, lh
 
 
@@ -215,6 +243,7 @@ def make_text_layer(spec, size_wh, box):
             cap_t = (bh - 2 * pad) * spec.get('capratio', 0.72)
         else:
             cap_t = (bh - 2 * pad) / (1 + 1.45 * spec.get('line_gap', 1.0) * (nlines - 1)) * spec.get('capratio', 0.95)
+    cap_t *= spec.get('capscale', 1.0)
     # find font size giving that cap height
     ref = ImageFont.truetype(font, 1000)
     capref = -ref.getbbox('НH', anchor='ls')[1]
@@ -222,7 +251,7 @@ def make_text_layer(spec, size_wh, box):
     if spec.get('jitter'):
         m, top, cap, lh = render_jitter(text, font, size, spec['jitter'], spec.get('jrot', 6), spec.get('seed', 1), spec.get('tracking', 0))
     else:
-        m, top, cap, lh = render_lines(text, font, size, spec.get('tracking', 0), spec.get('line_gap', 1.0))
+        m, top, cap, lh = render_lines(text, font, size, spec.get('tracking', 0), spec.get('line_gap', 1.0), spec.get('desc_squash'), spec.get('lalign', 'center'))
     a = np.array(m)
     xs = np.where(a.max(0) > 0)[0]
     if len(xs) == 0:
@@ -239,6 +268,9 @@ def make_text_layer(spec, size_wh, box):
     maxw = spec.get('maxw', bw - 2 * pad)
     hscale = min(1.0, maxw / tw) if tw > 0 else 1
     hscale = min(hscale, spec.get('hscale', 1.0))
+    if spec.get('xstretch'):
+        # растяжение по ширине (широкие шрифты оригинала), но не шире допустимого
+        hscale = min(spec['xstretch'], maxw / tw if tw > 0 else 1)
     # слишком узко — уменьшаем шрифт целиком, а не только сжимаем по ширине
     vscale = 1.0
     minh = spec.get('minh', 0)
@@ -259,7 +291,12 @@ def make_text_layer(spec, size_wh, box):
     else:
         px = x0 + (bw - nw) / 2
     valign = spec.get('valign', 'center')
-    if valign == 'top':
+    if valign == 'baseline':
+        # базовая линия первой строки — точно как у оригинала (spec['base_y'])
+        py = spec['base_y'] - (top + cap) * sx * vscale
+    elif valign == 'captop':
+        py = spec['cap_y'] - top_px
+    elif valign == 'top':
         py = y0 + pad - top_px
     elif valign == 'bottom':
         py = y1 - pad - block_h - top_px
@@ -276,6 +313,7 @@ def style(mask, spec, size):
     layer = Image.new('RGBA', (W, H), (0, 0, 0, 0))
     if spec.get('embolden'):
         mask = dilate(mask, spec['embolden'])
+    solid = mask
     if spec.get('hollow'):
         # неоновые трубки: только контур букв
         hw = spec['hollow']
@@ -299,6 +337,15 @@ def style(mask, spec, size):
             sm = dilate(sm, sw)
         sl = Image.new('RGBA', (W, H), col[:3] + (0,)); sl.putalpha(Image.fromarray((np.array(sm) * (col[3] / 255)).astype(np.uint8)))
         layer = Image.alpha_composite(layer, sl)
+    if spec.get('hollow') and spec.get('hollow_inner'):
+        # внутренность букв-трубок тёмная, как у оригинала (свечение не заливает букву изнутри)
+        import cv2
+        hw = spec['hollow']
+        inner = cv2.erode((np.array(solid) > 127).astype(np.uint8), np.ones((3, 3), np.uint8), iterations=max(1, int(hw / 2) + 1))
+        inner = Image.fromarray(inner * 255).filter(ImageFilter.GaussianBlur(0.8))
+        col = spec['hollow_inner']
+        il = Image.new('RGBA', (W, H), tuple(col[:3]) + (0,)); il.putalpha(Image.fromarray((np.array(inner).astype(np.float32) * (col[3] / 255)).astype(np.uint8)))
+        layer = Image.alpha_composite(layer, il)
     for st in spec.get('strokes', []) or ([(spec['stroke'], spec.get('stroke_fill', (0, 0, 0, 255)))] if spec.get('stroke') else []):
         w, col = st
         sm = dilate(mask, w)
@@ -375,6 +422,8 @@ def apply_spec(orig_im, spec):
     if spec.get('custom'):
         return spec['custom'](orig_im, spec)
     box = spec.get('box') or ink_bbox(orig_im)
+    if spec.get('vband'):
+        box = (box[0], spec['vband'][0], box[2], spec['vband'][1])
     if spec.get('expand'):
         e = spec['expand']; box = (max(0, box[0] - e), max(0, box[1] - e), min(W, box[2] + e), min(H, box[3] + e))
     if spec.get('fill') == 'auto':
@@ -435,11 +484,70 @@ def apply_spec(orig_im, spec):
         if tb[2] - tb[0] > lim:
             cx = {'left': tb[0] + lim / 2, 'right': tb[2] - lim / 2}.get(spec.get('align', 'center'), (tb[0] + tb[2]) / 2)
             tb = (cx - lim / 2, tb[1], cx + lim / 2, tb[3])
-    layer = make_text_layer(spec, (W, H), tb)
+    layer = fit_layer(orig_im, spec, (W, H), tb)
     if spec.get('rotate'):
         cx = (box[0] + box[2]) / 2; cy = (box[1] + box[3]) / 2
         layer = layer.rotate(spec['rotate'], resample=Image.BICUBIC, center=(cx, cy))
     return finish(orig_im, spec, Image.alpha_composite(base, layer))
+
+
+def allowed_box(orig_im, spec):
+    """Где можно рисовать: поля как у оригинала (не больше fit_margin), стороны, которых касается оригинал, — без полей."""
+    W, H = orig_im.size
+    m = spec.get('fit_margin', 3)
+    a = np.array(orig_im)[:, :, 3]
+    ys, xs = np.where(a > 24)
+    if len(xs) == 0:
+        return (m, m, W - m, H - m)
+    ol, ot, orr, ob = xs.min(), ys.min(), W - 1 - xs.max(), H - 1 - ys.max()
+    return (min(m, ol), min(m, ot), W - min(m, orr), H - min(m, ob))
+
+
+def fit_layer(orig_im, spec, size, tb, maker=None):
+    """make_text_layer с проверкой: надпись (с обводкой и свечением) не должна вылезать за поля оригинала (fit=True).
+    По горизонтали: если шире допустимого — сужение (maxw), иначе сдвиг внутрь;
+    по вертикали: если выше допустимого — уменьшение кегля, иначе сдвиг (не больше fit_maxdy, иначе тоже уменьшение)."""
+    maker = maker or make_text_layer
+    layer = maker(spec, size, tb)
+    if not spec.get('fit'):
+        return layer
+    ab = allowed_box(orig_im, spec)
+    W, H = size
+    cur = dict(spec)
+    dx = dy = 0.0
+    maxdy = spec.get('fit_maxdy', 0.06 * H)
+    pad_est = max([spec.get('stroke', 0)] + [w for w, _ in (spec.get('strokes') or [])]) + spec.get('embolden', 0)
+    visited = set()
+    for _ in range(60):
+        a = np.array(layer)[:, :, 3]
+        ys, xs = np.where(a > spec.get('fit_thr', 40))
+        if len(xs) == 0:
+            break
+        x0, y0, x1, y1 = xs.min(), ys.min(), xs.max() + 1, ys.max() + 1
+        if x0 >= ab[0] and y0 >= ab[1] and x1 <= ab[2] and y1 <= ab[3]:
+            break
+        if x0 < ab[0] or x1 > ab[2]:
+            if x1 - x0 > ab[2] - ab[0]:
+                cur['maxw'] = max(8, (x1 - x0) - (x1 - x0 - (ab[2] - ab[0])) - 2 * pad_est - 1)
+                dx = 0.0
+            elif x0 < ab[0]:
+                dx += ab[0] - x0
+            else:
+                dx -= x1 - ab[2]
+        if y0 < ab[1] or y1 > ab[3]:
+            need = (ab[1] - y0) if y0 < ab[1] else -(y1 - ab[3])
+            if y1 - y0 > ab[3] - ab[1] or abs(dy + need) > maxdy:
+                cur['capscale'] = cur.get('capscale', 1.0) * 0.97
+            else:
+                dy += need
+        st = (round(dx, 2), round(dy, 2), cur.get('capscale'), cur.get('maxw'))
+        if st in visited:   # зациклились на округлении пикселей — уменьшаем
+            cur['capscale'] = cur.get('capscale', 1.0) * 0.98
+            cur['maxw'] = (cur.get('maxw') or 10 ** 6) - 2 if cur.get('maxw') else None
+            if cur['maxw'] is None: cur.pop('maxw')
+        visited.add(st)
+        layer = maker(dict(cur, dx=spec.get('dx', 0) + dx, dy=spec.get('dy', 0) + dy), size, tb)
+    return layer
 
 
 def finish(orig_im, spec, out):
@@ -448,6 +556,8 @@ def finish(orig_im, spec, out):
         out.alpha_composite(orig_im.crop(kb), (kb[0], kb[1]))
     if spec.get('keep_dots'):
         out = Image.alpha_composite(out, dot_layer(orig_im, spec))
+    if spec.get('post'):
+        out = spec['post'](orig_im, spec, out)
     return out
 
 
@@ -511,7 +621,7 @@ def build_all(specs, preview=None, only=None):
                 ts = {t['name']: t for t in textures(E[sn].data)}
                 new = {}
                 for s in sl:
-                    if s['tex'] in ts:
+                    if s['tex'] in ts and (not s.get('srd') or s['srd'] == sn):
                         t = ts[s['tex']]
                         oi = decode(t, E[vn].data)
                         ni = apply_spec(oi, s)
@@ -606,7 +716,9 @@ def layers_custom(orig, spec):
             sub['fill'] = dominant_color(orig)
         if sub.get('gradient') == 'orig':
             sub['gradient'] = orig_gradient(orig, sub.get('grad_box'), sub.get('grad_erode', 3), sub.get('grad_bins', 12), sub.get('grad_lum'))
-        lay = make_text_layer(sub, (W, H), sub['box'])
+        if spec.get('fit') and 'fit' not in sub:
+            sub['fit'] = True
+        lay = fit_layer(orig, sub, (W, H), sub['box'])
         if sub.get('rotate'):
             b = sub['box']; lay = lay.rotate(sub['rotate'], resample=Image.BICUBIC, center=((b[0] + b[2]) / 2, (b[1] + b[3]) / 2))
         base = Image.alpha_composite(base, lay)

@@ -1,7 +1,7 @@
 import sys;sys.path.insert(0,'tools')
 from sheet import sheet
 from PIL import Image,ImageDraw
-S='/tmp/claude-0/-home-claude/4936e529-f043-5c61-947c-25fc9b8e788c/scratchpad'
+S='scratch/'
 def combo(grp,out,cell=170):
     ims=[]
     import sheet as sh

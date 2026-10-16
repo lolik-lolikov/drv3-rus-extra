@@ -2,7 +2,7 @@
 import os,sys,zipfile,glob
 VERSION=sys.argv[1] if len(sys.argv)>1 else 'test'
 MODE=os.environ.get('MODE','all')  # all | core | effects
-OUT=sys.argv[2] if len(sys.argv)>2 else f'/mnt/user-data/outputs/DRV3_rus_extra_{VERSION}.zip'
+OUT=sys.argv[2] if len(sys.argv)>2 else f'dist/DRV3_rus_extra_{VERSION}.zip'
 AUTHORS=os.environ.get('AUTHORS','Лев (и Claude)')
 def crlf(t): return t.replace('\r\n','\n').replace('\n','\r\n')
 bat_i='@echo off\r\ncd /d "%~dp0"\r\npowershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0installer\\install.ps1"\r\n'

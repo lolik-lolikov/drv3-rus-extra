@@ -1,7 +1,7 @@
 import sys,glob
 from PIL import Image,ImageDraw
 sys.path.insert(0,'tools'); from texedit import ink_bbox,dominant_color
-S='/tmp/claude-0/-home-claude/4936e529-f043-5c61-947c-25fc9b8e788c/scratchpad/'
+S='scratch/'
 pats=sys.argv[2:]; ims=[]
 for p in pats:
     fs=sorted(glob.glob('work/tex/all/*'+p+'*'))

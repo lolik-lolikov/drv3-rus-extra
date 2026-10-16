@@ -6,7 +6,7 @@ K = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 lib = open(os.path.join(K, 'installer/cpklib.cs'), encoding='utf-8').read()
 ps = open(os.path.join(K, 'installer/install.ps1'), encoding='utf-8').read().replace('#CPKLIB#', lib.rstrip('\n'))
 PS = os.path.join(T, 'install.ps1'); open(PS, 'w', encoding='utf-8').write(ps)
-OLD = '/tmp/claude-0/old/installer/install.ps1'
+OLD = os.environ.get('DRV3_OLD_INSTALL', '')  # необязательно: install.ps1 старой версии (тест обновления)
 E = json.load(open(os.path.join(T, 'expect.json')))
 PAY = os.path.join(T, 'payload')
 US, RES = 'partition_data_win_us.cpk', 'partition_resident_win.cpk'

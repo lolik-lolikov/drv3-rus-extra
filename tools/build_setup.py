@@ -3,7 +3,7 @@ python3 tools/build_setup.py <версия> [папка_вывода]
 Если есть папка build/ — сначала пересобирает pkg/payload (tools/mkdelta.py), иначе берёт готовый pkg/payload."""
 import os, sys, subprocess, shutil, zipfile
 VERSION = sys.argv[1] if len(sys.argv) > 1 else '2.1'
-OUTDIR = sys.argv[2] if len(sys.argv) > 2 else '/mnt/user-data/outputs'
+OUTDIR = sys.argv[2] if len(sys.argv) > 2 else 'dist'
 AUTHORS = os.environ.get('AUTHORS', 'lolik-lolikov')
 os.makedirs(OUTDIR, exist_ok=True)
 NAME = f'DRV3_Rus_Extra_Setup_v{VERSION}'

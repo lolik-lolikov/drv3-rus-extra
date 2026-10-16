@@ -333,3 +333,291 @@ override('sindan_US.png', hollow=4.5, fill=(255, 250, 255, 255), strokes=[(2.0, 
 override('kazari_US.png', hollow=2.2, fill=(255, 225, 255, 255), strokes=None, glow=(6, (230, 30, 220, 255)), glow_gain=2.0)
 override('date_US.png', text='Выбор места свидания', grow=1.15, minh=0.8, maxw=None)
 override('skill_kakera_US.png', maxw=330)
+
+# =====================================================================================
+# v2.4 (14.10.2026): повторная сверка с оригиналом.
+#   fit=True — надпись (с обводкой/свечением) не вылезает за поля оригинала (иначе кегль уменьшается);
+#   desc_squash — укоротить выносные (у, р, д): у шрифтов оригинала они короче, а текстуры тесные;
+#   vband — вертикальная полоса заглавных как у оригинала (одинаковая базовая линия у всех вариантов).
+# =====================================================================================
+# имена в списках выбора персонажа (План развития и Подземелье): плотный гротеск как в оригинале, выносные не обрезаются
+for k in _IDX:
+    override(f'charasele_name_{k}_US.png', font='roboto5', tracking=-0.9, cap=37, valign='baseline', base_y=51.5, desc_squash=0.55,
+             fit=True, maxw=522, minh=0.72, capratio=None)
+# месяцы и годы (объявления): базовая линия как у оригинала, выносные укорочены, без обрезки снизу
+# (заглавные оригинала с обводкой и тенью: месяцы 51..225, годы 18..234; заливка = минус обводка 12/11 и тень 10/8)
+for i in range(1, 13):
+    override('month_%02d_US.png' % i, cap=140, capratio=None, valign='baseline', base_y=203, desc_squash=0.6, fit=True, fit_maxdy=0)
+for i in range(1, 4):
+    override('year_%02d_US.png' % i, cap=176, capratio=None, valign='baseline', base_y=208, desc_squash=0.5, fit=True, fit_maxdy=0)
+override('root_min_US.png', vband=(10, 57), desc_squash=0.5, fit=True)
+override('root_max_US.png', vband=(9, 57), desc_squash=0.5, fit=True)
+# названия курсов у финиша: в оригинале выровнены вправо по x=337
+for i in range(5):
+    override('course_name_%02d_US.png' % i, align='right', box=(6, 4, 337, 56), widen=False, fit=True, desc_squash=0.6)
+# надписи, которые касались краёв текстуры (у оригинала там поля): уменьшать/сдвигать до полей оригинала
+for t in ['casino_detail_sub_tx_score_US.png', 'casino_detail_sub_tx_rank_US.png', 'casino_result_sub_tx_score_US.png', 'casino_result_sub_tx_rank_US.png',
+          'get_US.png', 'menu_title_US.png', 'rank_disp_US.png', 'rank_hai_US.png', 'charalist_title_US.png',
+          'chara_select_title_US.png', 'create_title_US.png', 'material_money_US.png', 'title_coursesele_US.png', 'title_charasele_US.png',
+          'root_unit_US.png', 'goal_finish_US.png', 'page_cursor_US.png', 'lv_max_US.png', 'box_mark_US.png']:
+    override(t, fit=True)
+# Автомат Мономоно: квадратный «цифровой» шрифт как в оригинале (HELP / LIST / LUCKY!) — буквы собраны из прямоугольников
+import squarefont as _sq
+SQ_W = {'М': 20, 'Щ': 22, 'Ь': 16, 'С': 16, 'И': 18, 'К': 18}
+override('help_US.png', custom=_sq.square_custom, fill=(255, 246, 0, 255), strokes=None, glow=None,
+         sq=dict(text='ПОМОЩЬ', h=25, top=3, v=4.5, t=4.5, d=3, gap=3.6, default_w=17, widths=SQ_W, cx=64))
+override('list_US.png', custom=_sq.square_custom, fill=(255, 246, 0, 255), strokes=None, glow=None,
+         sq=dict(text='СПИСОК', h=25, top=3, v=4.5, t=4.5, d=0, gap=3.6, default_w=17, widths=SQ_W, cx=64))
+# LUCKY! (незажжённый — тёмно-зелёные трубки; зажжённый — оранжевый неон): контур квадратных букв
+LUCKY_W = {'Д': 75, '!': 19}
+override('lucky_l_DXT1.png', custom=_sq.square_custom, hollow=4.5, hollow_inner=(0, 6, 0, 235), fill=(36, 64, 44, 255), strokes=None, glow=(10, (0, 40, 0, 255)), glow_gain=1.2,
+         basefill=(0, 0, 0, 255), sq=dict(text='УДАЧА!', h=75, top=23, v=17, t=17, d=11, gap=7, default_w=75, widths=LUCKY_W, cx=264))
+override('lucky_s_DXT1.png', custom=_sq.square_custom, hollow=3.0, hollow_inner=(12, 6, 0, 225), fill=(255, 227, 189, 255), strokes=[(1.2, (255, 150, 20, 255))],
+         glow=(6, (255, 140, 0, 255)), glow_gain=2.2, basefill=(0, 0, 0, 255),
+         sq=dict(text='УДАЧА!', h=37.5, top=11.5, v=8.5, t=8.5, d=5.5, gap=3.5, default_w=37.5, widths={'Д': 37.5, '!': 9.5}, cx=132))
+# вкладки навыков: в оригинале белые буквы с цветной обводкой (у неактивных — светлой), шрифт квадратный курсив (Exo 2 Black)
+TAB_OFF = [(240, 138, 138), (138, 174, 234), (138, 204, 138), (156, 156, 198), (150, 150, 150)]
+TAB_ON = [(234, 48, 48), (0, 120, 216), (0, 174, 24), (108, 84, 186), (102, 102, 96)]
+for i in range(5):
+    override('tab_off_0%d_US.png' % i, font='exo9', italic=0.2, fill=WHITE, strokes=[(5.5, TAB_OFF[i] + (255,))], capratio=0.52, fit=True)
+    override('tab_on_0%d_US.png' % i, font='exo9', italic=0.2, fill=WHITE, strokes=[(5.5, TAB_ON[i] + (255,))], capratio=0.47, fit=True)
+# шрифты ближе к оригиналу (вес/начертание)
+override('page_cursor_US.png', font='mpr', fill=(255, 255, 0, 255), strokes=[(3.5, BLACK)], align='right', widen=False, capratio=0.82, fit=True)
+override('lv_max_US.png', font='mpr9', fill=None, gradient='orig', grad_erode=1, grad_bins=10, grad_lum=150, strokes=[(4, (28, 28, 105, 255))],
+         glow=(3, (190, 190, 255, 255)), glow_gain=0.7, capratio=0.66, fit=True)
+override('headline_02_US.png', font='mpr5', fill=(242, 242, 242, 255), strokes=[(3.5, (70, 70, 80, 255))], capratio=0.72, fit=True)
+override('material_cost_US.png', font='mpr4', fill=(246, 246, 246, 255), strokes=[(1.6, (70, 70, 70, 255))], capratio=0.72, fit=True)
+override('goal_finish_US.png', font='mpr', fill=WHITE, strokes=[(4, BLACK)], align='left', lalign='left', widen=False, capratio=0.78, line_gap=0.9, fit=True)
+override('rest_US.png', font='roboto5', hscale=0.8, tracking=-0.3, align='right', lalign='right', widen=False, box=None, capratio=0.86, line_gap=0.82, fit=True)
+override('rest_lang_US.png', font='exo3', tracking=2.6, align='left', lalign='left', widen=False, capratio=0.9, line_gap=0.78, fit=True)
+# казино: размеры как у оригинала (кириллица без выносных — кегль больше), не упираться в края
+for t in ['casino_kankin_shoji_medal_tx_001_US.png', 'casino_kankin_shoji_medal_tx_000_US.png']:
+    override(t, align='left', grow=None, maxw=236, widen=True, capratio=1.25, minh=0.7, fit=True)
+override('casino_top_coin_tx_US.png', fit=True)
+for t, cr in [('casino_keihin_tab_tx_skill_US.png', 0.92), ('casino_keihin_tab_tx_present_US.png', 0.92), ('casino_keihin_tab_tx_theme_US.png', 0.92),
+              ('casino_top_diff_tx_easy_US.png', 0.82), ('casino_top_diff_tx_normal_US.png', 0.82), ('casino_top_diff_tx_hard_US.png', 0.82),
+              ('casino_result_sub_tx_bet_US.png', 0.98), ('casino_keihin_present_shoyu_tx_US.png', 0.9), ('casino_kankin_shoji_tx_000_US.png', 0.9),
+              ('casino_result_shokin_tx_US.png', 0.82)]:
+    override(t, capratio=cr, fit=True)
+for t in ['guide2_US.png', 'guide2_xone_US.png', 'guide2_win_US.png', 'guide2_batu_US.png']:
+    override(t, capk=0.84)
+override('menu_card_US.png', grow=1.18, minh=0.8, fit=True)
+override('title_01_US.png', capratio=0.8, fit=True)
+override('title_00_US.png', fit=True)
+for t, g in [('casino_keihin_tab_tx_skill_US.png', 2.2), ('casino_keihin_tab_tx_present_US.png', 1.9), ('casino_top_diff_tx_easy_US.png', 1.9),
+             ('casino_top_diff_tx_hard_US.png', 1.9), ('casino_result_sub_tx_bet_US.png', 2.4), ('casino_keihin_present_shoyu_tx_US.png', 2.0),
+             ('casino_kankin_shoji_tx_000_US.png', 2.0)]:
+    override(t, grow=g)
+override('title_01_US.png', capratio=0.68)
+override('casino_keihin_present_shoyu_tx_US.png', align='left', capratio=0.86)
+for t in ['casino_keihin_tab_tx_skill_US.png', 'casino_keihin_tab_tx_present_US.png']:
+    override(t, capratio=0.8)
+override('casino_result_sub_tx_bet_US.png', capratio=0.8)
+override('casino_keihin_present_shoyu_tx_US.png', font='philoi')
+
+# ---------- v2.4: мини-игры казино ----------
+import lutfx as _lx, fxcustom as _fx
+def lx(tex, text, only, srd=None, **kw):
+    d = dict(custom=_lx.lut_custom, only=only, **kw)
+    if srd: d['srd'] = srd
+    add(None, tex, text, **d)
+
+# Ловля лосося (sake_no_tukamidori_US.SPC): фирменный «рубленый» шрифт — Underdog, утолщённый до толщины оригинала
+SK = ['sake_no_tukamidori']
+lx('time_US.png', 'ВРЕМЯ', SK, 't_sake_time.srd', font='underdog', capratio=0.78, lx_thr=200, fit=True)
+lx('t_sake_score_tx_US.png', 'ОЧКИ', SK, 't_sake_score.srd', font='underdog', capratio=0.78, lx_thr=200, fit=True)
+lx('get_US.png', 'ЕСТЬ!', SK, 't_sake_get.srd', font='underdog', capratio=0.8, lx_thr=200, fit=True)
+lx('mis_US.png', 'МИМО!', SK, 't_sake_miss.srd', font='underdog', capratio=0.8, lx_thr=200, fit=True, grow=1.08, tracking=3, lx_wk=0.8)
+lx('title_US.png', 'МОНО-ОКО', SK, 't_sake_gauge.srd', font='underdog', box=(6, 116, 246, 160), widen=False, capratio=0.75,
+   rotate=36.4, lx_rot=36.4, lx_thr=200, lx_sel='dark', lx_lum_thr=110)
+lx('combo_tx_US.png', 'ПОДРЯД!', SK, 't_sake_combo.srd', font='underdog', box=(14, 44, 241, 92), widen=False, capratio=0.74,
+   rotate=11.3, lx_rot=11.3, lx_thr=200, lx_sel='bright', lx_lum_thr=140)
+lx('text_ex_US.png', 'ЭКСТРИМ!', SK, 't_sake_hukidasi.srd', font='underdog', box=(36, 22, 466, 104), widen=False, capratio=0.8,
+   italic=0.16, rotate=4.6, lx_rot=4.6, lx_thr=200, lx_sel='bright', lx_lum_thr=140)
+lx('text_order_US.png', '', SK, 't_sake_hukidasi.srd', lx_layout=_te.arc_text, arcs=[('ЗАКАЗ', 226, 272)], r0=208, center=(172, 262), cap=27,
+   maxstretch=2.5, font='underdog', lx_thr=200, lx_sel='dark', lx_lum_thr=90)
+# READY... GO! по буквам → ГОТОВ... ГО! (спрайтов-букв столько же: 5 + «...» + 2 + «!»)
+for i, (ch, rot) in enumerate([('Г', 8), ('О', -4), ('Т', 10), ('О', -8), ('В', -12)]):
+    lx('title_%02d_US.png' % i, ch, SK, 't_sake_start.srd', font='underdog', capratio=0.74, rotate=rot, lx_thr=200, lx_sel='bright', lx_lum_thr=150, lx_open=9)
+lx('title_06_US.png', 'Г', SK, 't_sake_start.srd', font='underdog', capratio=0.8, rotate=6, lx_thr=200, lx_sel='bright', lx_lum_thr=150, lx_open=9)
+lx('title_07_US.png', 'О', SK, 't_sake_start.srd', font='underdog', capratio=0.8, lx_thr=200, lx_sel='bright', lx_lum_thr=150, lx_open=9)
+# FINISH! (синие буквы: F, I, N, S, H, ! — «I» в анимации используется дважды) → ФИНИШ!! (H → второй «!»)
+for i, ch in enumerate('ФИНШ'):
+    lx('title_%02d_US.png' % i, ch, SK, 't_sake_finish.srd', font='underdog', capratio=0.8, lx_thr=200, lx_sel='bright', lx_lum_thr=150, lx_open=9)
+add(None, 'title_04_US.png', '', only=SK, srd='t_sake_finish.srd', custom=_fx.copy_tex, copy_from='title_05_US.png')
+
+# COMBO!/COMBOS! (общие для «Ловли лосося» и «Беззаконного пробега»): «КОМБО!» шрифтом с потёртостями, брызги оригинала вокруг
+CB = ['sake_no_tukamidori', 'towa_run_US']
+COMBO_ST = {'t_casino_combo_tx_single_US.png': dict(fill=(252, 255, 0, 255), box=(100, 30, 407, 98)),
+            't_casino_combo_tx_US.png': dict(fill=(252, 255, 0, 255), box=(56, 30, 407, 98), tracking=5),
+            't_casino_combo_tx_4_US.png': dict(fill=(255, 201, 245, 255), glow=(5, (255, 3, 169, 255)), glow_gain=2.4,
+                                               strokes=[(1.2, (255, 60, 200, 255))], box=(56, 30, 407, 98), tracking=5),
+            't_casino_combo_tx_3_US.png': dict(fill=(255, 251, 145, 255), glow=(2.5, (255, 3, 169, 255)), glow_gain=2.2,
+                                               strokes=[(1.4, (255, 3, 169, 255))], box=(56, 30, 407, 98), tracking=5),
+            't_casino_combo_tx_2_US.png': dict(fill=(255, 251, 61, 255), glow=(2.5, (248, 66, 18, 255)), glow_gain=2.2,
+                                               strokes=[(1.4, (248, 66, 18, 255))], box=(56, 30, 407, 98), tracking=5)}
+for t, st in COMBO_ST.items():
+    add(None, t, 'КОМБО!', only=CB, font='distressed', italic=0.18, align='right', widen=False, capratio=0.82,
+        under=_fx.splatter_under, splat_gap=3 if 'glow' not in st else 10, splat_min_a=40 if 'glow' not in st else 120,
+        post=_fx.scratch_post, **st)
+
+# кат-ин «Miss» (промах): лучи остаются, буквы — новые; эффектная копия (радиальное размытие) строится из новой надписи
+MISS_CI = dict(custom=_fx.cutin_custom, font='pattaya', box=(250, 160, 780, 330), widen=False, capratio=0.95, lx_wk=0.9, ci_erase=7)
+add(None, 't_drive_cutin_miss_tx_US.png', 'Мимо', only=['sake_no_tukamidori'], **MISS_CI)
+add(None, 't_drive_cutin_miss_tx_ef_DXT1_US.png', '', only=['sake_no_tukamidori'], custom=_fx.zoomblur_custom,
+    zb_pair='t_drive_cutin_miss_tx_US.png', zb_pair_spec=dict(MISS_CI, text='Мимо'), zb_cutin=True, zb_strength=1.0)
+
+# Беззаконный пробег (towa_run_US.SPC): «глитч»-надписи, трафарет названия
+TW = ['towa_run_US']
+GL = dict(custom=_fx.glitch_custom, font='distressed', capratio=0.8, gl_bg=(0, 0, 0, 255), gl_shift=(7, 3), fit=True, grow=1.04)
+GO_ST = dict(GL, text='МАРШ!!', box=(90, 110, 940, 420), widen=False, capratio=0.66, gl_scratch=45, seed=3)
+add(None, 't_drive_towa_tx_US_DXT1.png', 'МАРШ!!', only=TW, srd='t_towa_start_2.srd', **{k: v for k, v in GO_ST.items() if k != 'text'})
+add(None, 't_drive_towa_tx_ef_US.png', '', only=TW, srd='t_towa_start_2.srd', custom=_fx.zoomfx_custom, zb_pair='t_drive_towa_tx_US_DXT1.png',
+    zb_pair_spec=GO_ST, zb_alpha=True, zb_strength=0.1)
+SP_ST = dict(GL, text='РАЗГОН!', box=(40, 40, 990, 220), widen=False, gl_scratch=50, seed=5)
+add(None, 't_casino_drive_speedup_tx_US_DXT1.png', 'РАЗГОН!', only=TW, **{k: v for k, v in SP_ST.items() if k != 'text'})
+add(None, 't_casino_drive_speedup_tx_US_ef_DXT1.png', '', only=TW, custom=_fx.zoomfx_custom, zb_pair='t_casino_drive_speedup_tx_US_DXT1.png',
+    zb_pair_spec=SP_ST, zb_strength=0.2)
+FN_ST = dict(GL, text='ФИНИШ!', box=(90, 40, 940, 220), widen=False, gl_scratch=50, seed=9)
+add(None, 't_towa_finish_tx_US_DXT1.png', 'ФИНИШ!', only=TW, **{k: v for k, v in FN_ST.items() if k != 'text'})
+add(None, 't_towa_finish_tx_ef_US_DXT1.png', '', only=TW, custom=_fx.zoomfx_custom, zb_pair='t_towa_finish_tx_US_DXT1.png',
+    zb_pair_spec=FN_ST, zb_strength=0.1)
+add(None, 't_casino_drive_meter_tx_kmh_US.png', 'КМ/Ч', only=TW, font='exo7', italic=0.22, fill=(255, 255, 255, 255), strokes=[(1.0, (30, 30, 30, 255))], capratio=0.62, fit=True)
+add(None, 't_casino_drive_time_tx_US.png', 'ВРЕМЯ', only=TW, font='spray', fill=(255, 0, 170, 255), capratio=0.82, fit=True)
+add(None, 't_casino_score_tx_US.png', 'ОЧКИ', only=TW, font='spray', fill=(255, 0, 170, 255), capratio=0.82, fit=True)
+# название «OUTLAW RUN» → «БЕЗЗАКОННЫЙ / ПРОБЕГ»: трафарет (буквы — прозрачные окна в чёрной плашке с белым ободком) и светящаяся копия
+OUT_LAYERS = [dict(text='БЕЗЗАКОННЫЙ', box=(230, 215, 1820, 465), capratio=0.8, hscale=0.82, font='rubik9', widen=False),
+              dict(text='ПРОБЕГ', box=(450, 560, 1600, 890), capratio=0.9, font='rubik9', widen=False)]
+OUT_ST = dict(layers=OUT_LAYERS, rot_all=9.47, rot_center=(1024, 512), lx_ss=1, lx_core=0)
+lx('t_drive_towa_stencil_tx_000_US.png', '', TW, lx_sel='clear', lx_thr=128, lx_R=40, lx_nv=8, lx_far=(0, 0, 0, 255), **OUT_ST)
+lx('t_drive_towa_stencil_tx_001_US.png', '', TW, lx_sel='bright', lx_thr=128, lx_lum_thr=200, lx_R=40, lx_nv=8, **OUT_ST)
+
+# Монолит (monolith_US.SPC): пиксель-арт надписи (pixword: буквы-сердцевины + кольца, заливка, тень и «развёртка» — с оригинала),
+# SCORE — пиксельный шрифт 8×10 с палитрой оригинала (pixglyph)
+import pixword as _pw, pixglyph as _pg
+MN = ['monolith']
+PW = dict(custom=_pw.pixword_custom, font='rubik', pixel=4, pw_hscale=0.72)
+for _t, _txt in [('timeup1', 'ВРЕМЯ!'), ('timeup2', 'ВРЕМЯ!'), ('perfect1', 'ИДЕАЛЬНО!'), ('perfect2', 'ИДЕАЛЬНО!'), ('perfect3', 'ИДЕАЛЬНО!'),
+                 ('perfect4', 'ИДЕАЛЬНО!'), ('nomore1', 'ХОДОВ НЕТ!'), ('nomore2', 'ХОДОВ НЕТ!')]:
+    add(None, 't_casino_hkt_last_tx_%s_US.png' % _t, _txt, only=MN, srd='t_casino_hkt_last.srd', **dict(PW, pw_space=10))
+for _t in ['sake', 'sake2', 'monomi', 'monomi2', 'kumas', 'kumas2']:
+    add(None, 't_hkt_get_tx_%s_US.png' % _t, 'ЕСТЬ!!', only=MN, srd='t_casino_hkt_get.srd',
+        **dict(PW, font='russo', pw_hscale=0.85, pw_grow=1.12, pw_erase=True, pw_exclude=[(0, 0, 600, 296)]))
+add(None, 't_monolith_start_tx_start_US.png', 'СТАРТ!', only=MN, srd='t_monolith_start_2.srd', **dict(PW, pixel=8, pw_hscale=0.8))
+for _srd in ('t_monolith_start.srd', 't_monolith_start_2.srd'):
+    add(None, 't_monolith_start_tx_monolith_US.png', 'Монолит', only=MN, srd=_srd,
+        **dict(PW, pixel=8, pw_hscale=0.8, pw_gap=1, pw_period=1, pw_nb=24, pw_grow=1.12, pw_core_sel='inside'))
+    add(None, 't_monolith_start_tx_otakara_US.png', 'ОХОТНИК♥ЗА СОКРОВИЩАМИ!', only=MN, srd=_srd,
+        **dict(PW, pixel=8, pw_hscale=0.5, pw_gap=1, pw_period=2, pw_space=3, pw_grow=1.9, pw_sprites={'♥': (945, 240, 1000, 296)},
+               pw_core_sel='inside'))
+add(None, 't_casino_hkt_score_tx_DXT1_US.png', 'ОЧКИ', only=MN, srd='t_casino_hkt_score.srd', custom=_pg.score_custom, pixel=4)
+
+# =====================================================================================
+# v2.4 (14.10.2026, продолжение): непереведённые картинки, найденные при аудите
+# =====================================================================================
+import neonfx as _nf
+# копии «БОНУСНАЯ ИГРА!» и «Подробно» внутри самого автомата (slot_machine_US.SPC)
+override('text_DXT1.png', only=['slot_cutin_bonus', 'slot_machine'])
+override('detail_DXT1.png', only=['slot_setumei', 'slot_machine'])
+# неоновые буквы BONUS GAME! по одной (ef_00..09) -> БОНУС ИГРА! (O и ! остаются)
+BONUS = dict(custom=_lx.lut_custom, font='rubik9', italic=0.25, box=(8, 33, 120, 95), cap=62, widen=False, lx_core=0, lx_lum=True,
+             lx_lum_thr=175, lx_bg=(0, 0, 0, 255), lx_R=26, lx_nd=8, lx_nv=8, only=['slot_bonus_count', 'slot_machine'])
+for _k, _ch in {'00': 'Б', '02': 'Н', '03': 'У', '04': 'С', '05': 'И', '06': 'Г', '07': 'Р', '08': 'А'}.items():
+    add(None, 'ef_%s_US_DXT1.png' % _k, _ch, **BONUS)
+# вывеска MONOMONO SLOT над слотами (parts_*_US + серая title_bg) оставлена как логотип: горящие буквы ложатся поверх
+# объёмных серых, а серую 3D-вывеску без потерь не перерисовать — частичная замена дала бы смесь N/Н, S/С, L/Л.
+# неон MONOKUMA (Любовный тест): N -> Н, U -> У — новые трубки по силуэту, свечение по таблице оригинала
+add(A + 'ainori_sindan_US.spc', 'monokumaz_US.png', '', custom=_nf.neon_custom, nr_letters=[
+    dict(cell=(366, 58, 480, 196), polys=[[(372, 64), (402, 64), (402, 190), (372, 190)], [(444, 64), (474, 64), (474, 190), (444, 190)],
+                                          [(400, 113), (446, 113), (446, 139), (400, 139)]]),
+    dict(cell=(716, 62, 798, 165), polys=[[(767, 67), (793, 67), (754, 161), (728, 161)], [(721, 67), (746, 67), (770, 124), (748, 132)]])])
+# AUTO (кнопка авто): буквы по одной, меняется только U -> В
+for _dn, _col in (('day', (255, 186, 0, 255)), ('night', (0, 122, 167, 255))):
+    add(A + 'ainori_common_page_US.spc', 'auto_u_%s_US.png' % _dn, 'В', font='russo', fill=_col, box=(4, 2, 60, 31), cap=29, widen=False)
+# GO! (свидание) -> ИДЁМ! квадратным шрифтом
+add(A + 'ainori_date_view_US.spc', 'text_go_US.png', '', custom=_sq.square_custom, fill=(255, 255, 255, 255),
+    sq=dict(text='ИДЁМ!', h=34, top=16, v=7, t=7, d=5, gap=5, default_w=20, widths={'!': 7, 'М': 24, 'Д': 22}, cx=64))
+# DAY -> ДЕНЬ: округлый жирный, градиент оригинала, чёрная и белая обводки
+DAYS = dict(font='mpr', gradient='orig', strokes=[(3.4, (255, 255, 255, 255)), (2.2, (0, 0, 0, 255))], tracking=2, widen=False, desc_squash=0.5)
+for _k in ('000', '001'):
+    add(A + 'ainori_day_change_US.spc', 'day_lang_%s_US.png' % _k, 'ДЕНЬ', box=(4, 12, 188, 50), cap=37, xstretch=1.1, **DAYS)
+for _dn in ('day', 'night'):
+    for _l, _ch in (('d', 'Д'), ('a', 'Е'), ('y', 'НЬ')):
+        add(A + 'ainori_day_change_US.spc', 'day_%s_%s_US.png' % (_dn, _l), _ch,
+            **dict(DAYS, strokes=[(4.4, (255, 255, 255, 255)), (2.4, (0, 0, 0, 255))], box=(1, 11, 63, 47), cap=35, tracking=1, xstretch=1.15))
+    add(A + 'ainori_day_US.spc', 'day_%s_US.png' % _dn, 'ДЕНЬ', custom=_fx.rotstyle_custom,
+        **dict(DAYS, box=(-20, 46, 141, 84), cap=27, rotate=-50, xstretch=1.1))
+# NEW (красный квадратный с белой обводкой) -> НОВОЕ
+NEWS = dict(custom=_sq.square_custom, fill=(255, 0, 0, 255), strokes=[(4.5, (255, 255, 255, 255))])
+for _a in ('carddeath_get_list', 'success_chara_select_list', 'success_chara_select_menu', 'success_course_select_menu'):
+    add(None, 'new_US.png', '', only=[_a], sq=dict(text='НОВОЕ', h=25, top=19, v=5, t=5, gap=3, default_w=17, x0=15), **NEWS)
+add(None, 'new_US.png', '', only=['success_result_data'], sq=dict(text='НОВОЕ', h=25, top=19, v=5, t=5, gap=3, default_w=17, cx=99), **NEWS)
+# LV -> УР
+add(None, 'LV_US.png', 'УР', only=['rpg_battle_command_skill'], font='mpr5', fill=(255, 255, 255, 255), box=(40, 14, 126, 50), cap=36, align='right', widen=False)
+add(None, 'LV_US.png', 'УР:', only=['rpg_party_status'], font='mpr', fill=(255, 255, 255, 255), strokes=[(3, (0, 0, 0, 255))], box=(24, 16, 126, 51), cap=34,
+    align='left', widen=False, tracking=3)
+add(None, 'LV_US.png', 'УР', only=['rpg_status'], font='roboto', fill=(255, 255, 255, 255), box=(20, 5, 99, 35), cap=29, align='right', widen=False)
+add(None, 'LV_US.png', 'УР', only=['success_status'], font='roboto', fill=(0, 0, 0, 255), box=(10, 3, 99, 37), cap=33, align='right', widen=False)
+tadd('headline_01_US.png', 'УР', dict(font='mpr5', fill=(242, 242, 242, 255), strokes=[(3.5, (70, 70, 80, 255))], capratio=0.72, fit=True))
+# подсказка для клавиатуры AZERTY (японский текст 高速移動 в английской версии)
+tadd('check_guide_win_az_US.png', 'Быстрый ход', dict(font='mpr5', fill=WHITE, clear='box', clearbox=(378, 0, 736, 80), box=(389, 16, 730, 69),
+                                                      align='left', capratio=0.7, widen=False))
+# титры RPG: заголовки и должности (имена остаются латиницей)
+STAFF = dict(font='russo', fill=(255, 255, 255, 255), box=(0, 33, 1920, 87), capratio=1.0, widen=False, maxw=1840)
+for _i, _t in ((0, 'КОМАНДА РЕЖИМОВ РАЗВИТИЯ И RPG'), (17, 'КОМАНДА DANGANRONPA V3'), (18, 'ПЕРСОНАЖИ СЕРИИ DANGANRONPA')):
+    tadd('staffroll_staff_%02d_US.png' % _i, _t, STAFF)
+POS = dict(font='comfortaa', fill='auto', box=(0, 31, 1920, 70), capratio=1.0, widen=False)
+for _i, _t in ((1, 'РЕЖИССЁР И ГЕЙМДИЗАЙН'), (2, 'СЦЕНАРИЙ'), (3, 'ТЕКСТ'), (4, 'ПРОГРАММИРОВАНИЕ'), (5, 'ГРАФИЧЕСКИЙ ДИЗАЙН'),
+               (6, 'ПИКСЕЛЬНЫЕ ПЕРСОНАЖИ'), (7, 'МУЗЫКА'), (8, 'ЗВУКИ'), (9, 'РУКОВОДСТВО'), (10, 'ОСОБАЯ БЛАГОДАРНОСТЬ')):
+    tadd('staffroll_position_%02d_US.png' % _i, _t, POS)
+# Автомат Мономоно: «Repeat Rate» -> «Шанс повтора» (три спрайта: «Ша» крупно, «нс» мелко, «повтора»)
+JUH = dict(font='kurale', widen=False, only=['m_left'])
+add(None, 'juhuku_00_US.png', 'Ша', fill=(255, 150, 0, 255), box=(2, 14, 104, 78), capratio=0.95, rotate=12, **JUH)
+add(None, 'juhuku_01_US.png', 'нс', fill=(255, 222, 0, 255), box=(3, 18, 62, 50), capratio=0.8, rotate=-4, **JUH)
+add(None, 'juhuku_02_US.png', 'повтора', fill=(145, 255, 0, 255), box=(4, 12, 126, 52), capratio=0.8, rotate=5, **JUH)
+# неон MONOMONO на дуге автомата и горящая буква N: N -> Н (M и O совпадают)
+add(None, 'machine_front_US.png', '', only=['m_machine'], custom=_fx.n2h_custom, n2h=[
+    dict(L=((402, 95), (388, 56)), R=((422.5, 81), (417.5, 47)), D=((388, 56), (421, 82)), box=(372, 36, 440, 104), w=7),
+    dict(L=((646, 112), (666, 85)), R=((672, 130), (694, 104)), D=((666, 85), (672, 130)), box=(636, 76, 708, 146), w=7)])
+add(None, 'title_ef_n_DXT1_US.png', '', only=['m_machine'], custom=_fx.n2h_custom, n2h_mask=('lum', 30),
+    n2h=[dict(L=((23, 56), (15, 18)), R=((50.5, 46), (42.5, 6)), D=((16, 20), (49, 42)), box=(0, 0, 64, 64), w=7, glow=8, grow=1)])
+# подписи эффектов RPG: облако оригинала (со «вихрями») остаётся, буквы оригинала закрашиваются, новые — поверх
+EFF_FILL = {'025': (240, 48, 48), '029': (144, 208, 240)}
+for _k in ['011', '013', '015', '017', '018', '019', '021', '023', '025', '027', '029', '031']:
+    _g = [s for s in SPECS if s['tex'] == 'effect_%s_US.png' % _k][0]['glow'][1]
+    override('effect_%s_US.png' % _k, custom=_fx.effect_custom, under=None, glow=(10, _g), glow_gain=1.2, capratio=0.52, maxw=280,
+             em_fill=EFF_FILL.get(_k), em_odil=3 if _k == '019' else None)
+# кат-ин «Awaken» -> «Пробуждение!»: кистевой шрифт, синяя «грязная» заливка, жёлтая смещённая обводка, свечение
+override('telop_kakusei_US.png', custom=_fx.brush_custom, font='pattaya', box=(40, 90, 1272, 660), capratio=0.62, rotate=6, widen=False,
+         br_w=6, br_shift=(12, 7), italic=None, fill=None, strokes=None)
+# проверка краёв после полной сборки (audit/edgecheck.py): поля как у оригинала
+for _t in ['casino_top_title_tx_mono_US.png', 'casino_top_hs_tx_US.png', 'casino_detail_tx_US.png', 'casino_kankin_shoji_medal_tx_001_US.png',
+           'season_month_10_US.png', 'menu_money_US.png']:
+    override(_t, fit=True)
+for _dn in ('day', 'night'):
+    override('day_%s_y_US.png' % _dn, xstretch=None, box=(9, 11, 55, 47), cap=33)
+override('casino_kankin_shoji_medal_tx_001_US.png', capratio=1.15)
+for _s in SPECS:
+    if _s['tex'] == 'LV_US.png' and _s.get('only') == ['success_status']:
+        _s.update(cap=31, box=(10, 4, 99, 36))
+override('juhuku_00_US.png', box=(8, 14, 108, 78))
+override('juhuku_02_US.png', capratio=0.72, box=(6, 12, 122, 52))
+# READY…GO! / FINISH!! (Ловля лосося): буквы-«наклейки» — заливка по таблице оригинала, чёрная и белая обводки и тень
+# подобраны по оригиналу (fxcustom.sticker_custom); ширина буквы — как у английской в том же месте анимации
+STK = {('t_sake_start.srd', 'title_00_US.png'): dict(capratio=0.92, rotate=8), ('t_sake_start.srd', 'title_01_US.png'): dict(capratio=0.92, rotate=-4),
+       ('t_sake_start.srd', 'title_02_US.png'): dict(capratio=0.92, rotate=10), ('t_sake_start.srd', 'title_03_US.png'): dict(capratio=0.92, rotate=-8),
+       ('t_sake_start.srd', 'title_04_US.png'): dict(capratio=0.92, rotate=-12), ('t_sake_start.srd', 'title_06_US.png'): dict(capratio=0.95, rotate=6),
+       ('t_sake_start.srd', 'title_07_US.png'): dict(capratio=0.97, rotate=None),
+       ('t_sake_finish.srd', 'title_00_US.png'): dict(capratio=0.97, st_maxw=215, lx_wk=0.9),
+       ('t_sake_finish.srd', 'title_01_US.png'): dict(capratio=0.97, st_maxw=150, lx_wk=0.75),
+       ('t_sake_finish.srd', 'title_02_US.png'): dict(capratio=0.97, st_maxw=245),
+       ('t_sake_finish.srd', 'title_03_US.png'): dict(capratio=0.97, st_maxw=205, lx_wk=0.8)}
+for _s in SPECS:
+    _k = (_s.get('srd'), _s['tex'])
+    if _k in STK and _s.get('custom') is _lx.lut_custom:
+        for _kk in [k for k in _s if k.startswith('lx_')]:
+            _s.pop(_kk)
+        _s.update(custom=_fx.sticker_custom, font='underdog', st_grow=1.12, **STK[_k])
+        if _s.get('rotate') is None:
+            _s.pop('rotate', None)
+assert sum(1 for _s in SPECS if _s.get('custom') is _fx.sticker_custom) == len(STK)

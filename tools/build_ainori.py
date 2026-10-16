@@ -19,6 +19,19 @@ for e in spc['entries']:
         else: new.append((sid,s))
     st['strings']=new
     e.data=stx_write(st)
+# правки поверх текста основного русификатора (файлы, которых нет в work/src): work/tr_main/<имя>.tsv
+for e in spc['entries']:
+    p=f'work/tr_main/{e.name[:-4]}.tsv'
+    if not os.path.exists(p): continue
+    st=stx_read(e.data); new=list(st['strings'])
+    for l in open(p,encoding='utf-8'):
+        if '\t' not in l: continue
+        i,t=l.rstrip('\n').split('\t',1); i=int(i)
+        r=t.replace('\\n','\n').replace('\\r','\r')
+        if new[i][1]!=r: changed+=1
+        new[i]=(new[i][0],r)
+    st['strings']=new
+    e.data=stx_write(st)
 t=time.time()
 data=spc_write(spc,compress=True)
 print('strings changed',changed,'size',len(data),'time',round(time.time()-t,1))
